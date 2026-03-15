@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -13,13 +14,15 @@ public class Main {
     int port = 6379;
     try {
       serverSocket = new ServerSocket(port);
-      // Since the tester restarts your program quite often, setting SO_REUSEADDR
-      // ensures that we don't run into 'Address already in use' errors
       serverSocket.setReuseAddress(true);
-      // Wait for connection from client.
-      clientSocket = serverSocket.accept();
+      // Since the tester restarts your program quite often, setting SO_REUSEADDR
+      while (true) {
+        clientSocket = serverSocket.accept();
+        OutputStream out = clientSocket.getOutputStream();
 
-      clientSocket.getOutputStream().write("+PONG\r\n".getBytes());
+        out.write("+PONG\r\n".getBytes());
+        out.flush();
+      }
 
     } catch (IOException e) {
       System.out.println("IOException: " + e.getMessage());
